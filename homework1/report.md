@@ -10,11 +10,10 @@
 
 ### 解題策略
 
-1.從第二個元素開始，逐步與前方元素比較。
-2.若前方元素較大則向右移動，直到找到適當位置。
-3.將元素插入正確位置。
-
-使用的資料結構為陣列（Array），方便元素的直接存取與交換。
+1. 使用隨機排列產生器（程式 7.20）產生測試資料。
+2. 若前方元素較大則向右移動，直到找到適當位置。
+3. 將元素插入正確位置。
+4. 從第二個元素開始，逐步與前方元素比較。
 
 ## 程式實作
 
@@ -23,7 +22,18 @@
 ```cpp
 #include <iostream>
 #include <vector>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
+
+// Random permutation generator (程式 7.20)
+template <class T>
+void Permute(T *a, int n) {
+    for (int i = n; i >= 2; i--) {
+        int j = rand() % i;
+        swap(a[j], a[i - 1]);
+    }
+}
 
 void insertionSort(vector<int>& arr) {
     int n = arr.size();
@@ -40,7 +50,18 @@ void insertionSort(vector<int>& arr) {
 }
 
 int main() {
-    vector<int> arr = {5, 2, 4, 6, 1, 3};
+    srand(time(0));
+    int n = 10;
+    vector<int> arr(n);
+    for (int i = 0; i < n; i++) arr[i] = i + 1;
+
+    Permute(&arr[0], n);
+
+    cout << "Original array: ";
+    for (int num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
 
     insertionSort(arr);
 
@@ -56,8 +77,8 @@ int main() {
 
 ## 效能分析
 
-1. 時間複雜度：程式的時間複雜度為 $O(\log n)$。
-2. 空間複雜度：空間複雜度為 $O(100\times \log n + \pi)$。
+1. 時間複雜度：最佳情況 $O(n)$、最壞情況 $O(n^2)$、平均情況 $O(n^2)$
+2. 空間複雜度：空間複雜度為 $O(1)$。
 
 ## 測試與驗證
 
@@ -73,11 +94,7 @@ int main() {
 
 ### 編譯與執行指令
 
-```shell
-$ g++ -std=c++17 -o sigma sigma.cpp
-$ ./sigma
-6
-```
+
 
 ### 結論
 
@@ -87,36 +104,22 @@ $ ./sigma
 
 ## 申論及開發報告
 
-### 選擇遞迴的原因
+### 使用 Insertion Sort 的理由：
 
-在本程式中，使用遞迴來計算連加總和的主要原因如下：
-
-1. **程式邏輯簡單直觀**  
-   遞迴的寫法能夠清楚表達「將問題拆解為更小的子問題」的核心概念。  
-   例如，計算 $\Sigma(n)$ 的過程可分解為：  
-
-   $$
-   \Sigma(n) = n + \Sigma(n-1)
-   $$
-
-   當 $n$ 等於 1 或 0 時，直接返回結果，結束遞迴。
-
-2. **易於理解與實現**  
-   遞迴的程式碼更接近數學公式的表示方式，特別適合新手學習遞迴的基本概念。  
-   以本程式為例：  
-
+1. **使用場景與效能觀察**    
+   雖然 Insertion Sort 的時間複雜度在平均與最壞情況下為 O(n^2)，    
+   但其實在資料量小（如 n < 20）或資料本身接近有序的情況下，    
+   Insertion Sort 的效能往往超過其他複雜排序法（如 Merge Sort 或 Heap Sort）。
+2. **對於小型或近乎排序的資料有較佳效能**
+   Insertion Sort 在資料幾乎已經排序時效能非常高。
+   其時間複雜度在最佳情況下為 O(n)，
+   遠優於 Merge Sort 與 Heap Sort 的 O(n log n)。以下是一個幾乎排序的例子：
+   
    ```cpp
-   int sigma(int n) {
-       if (n < 0)
-           throw "n < 0";
-       else if (n <= 1)
-           return n;
-       return n + sigma(n - 1);
-   }
+   vector<int> arr = {1, 2, 3, 5, 4, 6, 7};
    ```
-
-3. **遞迴的語意清楚**  
-   在程式中，每次遞迴呼叫都代表一個「子問題的解」，而最終遞迴的返回結果會逐層相加，完成整體問題的求解。  
-   這種設計簡化了邏輯，不需要額外變數來維護中間狀態。
-
-透過遞迴實作 Sigma 計算，程式邏輯簡單且易於理解，特別適合展示遞迴的核心思想。然而，遞迴會因堆疊深度受到限制，當 $n$ 值過大時，應考慮使用迭代版本來避免 Stack Overflow 問題。
+   
+3. **空間需求小，適合記憶體有限的環境**
+   Insertion Sort 不需要額外的記憶體空間，僅使用常數額外空間，
+   屬於 in-place 排序法。這對於嵌入式系統或記憶體受限環境特別實用。
+   
