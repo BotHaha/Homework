@@ -29,6 +29,7 @@ void insertionSort(vector<int>& arr) {
     }
 }
 
+
 int main() {
     srand(time(0));
     int n = 500; //測試 n=500、1000、2000、3000、4000、5000
