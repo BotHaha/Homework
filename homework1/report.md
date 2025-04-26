@@ -110,12 +110,12 @@ int main() {
 
 ### 編譯與執行指令
 ```shell
-$ g++ main.cpp --std=c++21 -o main.exe    # 編譯成執行檔
-$ .\main.exe                              # 執行程式
+$ g++ main.cpp --std=c++21 -o main.exe
+$ .\main.exe
 Timer precision (delta δ): 0 nanoseconds
-Original array: 4 2 9 1 6 5 8 10 3 7
+Original array: 3 10 1 4 6 2 7 5 9 8
 Sorted array: 1 2 3 4 5 6 7 8 9 10
-Sorting time: 35 microseconds
+Sorting time: 15 microseconds
 ```
 
 ### 結論
