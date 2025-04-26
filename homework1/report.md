@@ -54,7 +54,7 @@ void insertionSort(vector<int>& arr) {
 
 int main() {
     srand(time(0));
-    int n = 500; //測試 n=500、1000、2000、3000、4000、5000
+    int n = 10; //測試 n=500、1000、2000、3000、4000、5000
     vector<int> arr(n);
     for (int i = 0; i < n; i++) arr[i] = i + 1;
 
@@ -109,8 +109,14 @@ int main() {
 | 測試六   | $n = 5000$   | 100ns        | 92ms        | 
 
 ### 編譯與執行指令
-
-
+```shell
+$ g++ main.cpp --std=c++21 -o main.exe    # 編譯成執行檔
+$ .\main.exe                              # 執行程式
+Timer precision (delta δ): 0 nanoseconds
+Original array: 4 2 9 1 6 5 8 10 3 7
+Sorted array: 1 2 3 4 5 6 7 8 9 10
+Sorting time: 35 microseconds
+```
 
 ### 結論
 
