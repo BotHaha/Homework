@@ -121,6 +121,10 @@ int main() {
 | 測試五   | $n = 4000$   | 100ns        | 7479ms        | 
 | 測試六   | $n = 5000$   | 100ns        | 10775ms        | 
 
+### 繪製圖表（x 軸為 n，y 軸為時間）
+
+![image](https://github.com/user-attachments/assets/e306b872-6949-4fc6-8f2a-0b6d261dc896)
+
 ### 編譯與執行指令
 
 ```shell
