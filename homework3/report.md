@@ -1,7 +1,7 @@
 # 41125243 
 # 41043146
 
-作業二 (Merge Sort 使用Iterative版本)
+作業三 (Merge Sort 使用Iterative版本)
 
 ## 解題說明
 
