@@ -15,6 +15,14 @@ void Permute(T *a, int n) {
     }
 }
 
+// 最壞情況產生器
+template <class T>
+void ReverseFill(T* a, int n) {
+    for (int i = 0; i < n; i++) {
+        a[i] = n - i;
+    }
+}
+
 void insertionSort(vector<int>& arr) {
     int n = arr.size();
     for (int i = 1; i < n; i++) {
@@ -29,10 +37,9 @@ void insertionSort(vector<int>& arr) {
     }
 }
 
-
 int main() {
     srand(time(0));
-    int n = 500; //測試 n=500、1000、2000、3000、4000、5000
+    int n = 10; //測試 n=500、1000、2000、3000、4000、5000
     vector<int> arr(n);
     for (int i = 0; i < n; i++) arr[i] = i + 1;
 
@@ -43,7 +50,8 @@ int main() {
     cout << "Timer precision (delta δ): " << delta << " nanoseconds" << endl;
 
     // 顯示原始陣列
-    Permute(&arr[0], n);
+    Permute(&arr[0], n); //平均情況生成排序
+    //ReverseFill(&arr[0], n); //最壞情況生成排序
     cout << "Original array: ";
     for (int num : arr) {
         cout << num << " ";
