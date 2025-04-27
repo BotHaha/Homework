@@ -134,6 +134,8 @@ int main() {
 
 ### 圖表
 
+![image](https://github.com/user-attachments/assets/263ae4a3-2b0f-4bc2-9fe6-fe0c4c5f796f)
+
 ### 編譯與執行指令
 ```shell
 $ g++ main.cpp --std=c++21 -o main.exe
