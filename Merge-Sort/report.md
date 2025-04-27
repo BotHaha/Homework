@@ -144,7 +144,7 @@ int main() {
 | 測試五   | $n = 4000$   | 100ns        | 7479ms       | 
 | 測試六   | $n = 5000$   | 100ns        | 10775ms      | 
 
-#### 圖表（x 軸為 n，y 軸為時間）
+### 圖表（x 軸為 n，y 軸為時間）
 
 ![image](https://github.com/user-attachments/assets/d72eeaaf-40bc-4c89-b73b-b4c38716139f)
 
