@@ -15,6 +15,14 @@ void Permute(T *a, int n) {
     }
 }
 
+// 最壞情況產生器
+template <class T>
+void ReverseFill(T* a, int n) {
+    for (int i = 0; i < n; i++) {
+        a[i] = n - i;
+    }
+}
+
 // 合併兩個已排序子陣列
 void merge(vector<int>& arr, int left, int mid, int right) {
     int n1 = mid - left + 1;
@@ -59,7 +67,8 @@ int main() {
     auto delta = duration_cast<nanoseconds>(timer_end - timer_start).count();
     cout << "Timer precision (delta δ): " << delta << " nanoseconds" << endl;
 
-    Permute(&arr[0], n);
+    Permute(&arr[0], n); //隨機產生資料
+    //ReverseFill(&arr[0], n); //最壞情況產生資料
 
     cout << "Original array: ";
     for (int num : arr) cout << num << " ";
