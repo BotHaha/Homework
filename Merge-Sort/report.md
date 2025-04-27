@@ -37,6 +37,14 @@ void Permute(T *a, int n) {
     }
 }
 
+// 最壞情況產生器
+template <class T>
+void ReverseFill(T* a, int n) {
+    for (int i = 0; i < n; i++) {
+        a[i] = n - i;
+    }
+}
+
 // 合併兩個已排序子陣列
 void merge(vector<int>& arr, int left, int mid, int right) {
     int n1 = mid - left + 1;
@@ -81,7 +89,8 @@ int main() {
     auto delta = duration_cast<nanoseconds>(timer_end - timer_start).count();
     cout << "Timer precision (delta δ): " << delta << " nanoseconds" << endl;
 
-    Permute(&arr[0], n);
+    Permute(&arr[0], n); //隨機產生資料
+    //ReverseFill(&arr[0], n); //最壞情況產生資料
 
     cout << "Original array: ";
     for (int num : arr) cout << num << " ";
@@ -109,20 +118,36 @@ int main() {
 
 ## 測試與驗證
 
-### 測試案例
+### 最壞情況測試案例
+
+使用 Permute() 函式
 
 | 測試案例 | 輸入參數 $n$ | Timer 精度（δ) | 排序執行時間 |
 |----------|--------------|--------------|-------------|
-| 測試一   | $n = 500$    | 100ns        | 1180ms         |
-| 測試二   | $n = 1000$   | 100ns        | 2308ms        |
-| 測試三   | $n = 2000$   | 100ns        | 4274ms        |
+| 測試一   | $n = 500$    | 100ns        | 902ms       |
+| 測試二   | $n = 1000$   | 100ns        | 2552ms      |
+| 測試三   | $n = 2000$   | 100ns        | 4323ms      |
+| 測試四   | $n = 3000$   | 100ns        | 5255ms      |
+| 測試五   | $n = 4000$   | 100ns        | 7961ms      | 
+| 測試六   | $n = 5000$   | 100ns        | 9375ms      | 
+
+### 平均測試案例
+
+使用ReverseFill() 函式
+
+| 測試案例 | 輸入參數 $n$ | Timer 精度（δ) | 排序執行時間 |
+|----------|--------------|--------------|-------------|
+| 測試一   | $n = 500$    | 100ns        | 1180ms       |
+| 測試二   | $n = 1000$   | 100ns        | 2308ms       |
+| 測試三   | $n = 2000$   | 100ns        | 4274ms       |
 | 測試四   | $n = 3000$   | 100ns        | 6644ms       |
-| 測試五   | $n = 4000$   | 100ns        | 7479ms        | 
-| 測試六   | $n = 5000$   | 100ns        | 10775ms        | 
+| 測試五   | $n = 4000$   | 100ns        | 7479ms       | 
+| 測試六   | $n = 5000$   | 100ns        | 10775ms      | 
 
-### 繪製圖表（x 軸為 n，y 軸為時間）
+#### 圖表（x 軸為 n，y 軸為時間）
 
-![image](https://github.com/user-attachments/assets/e306b872-6949-4fc6-8f2a-0b6d261dc896)
+![image](https://github.com/user-attachments/assets/d72eeaaf-40bc-4c89-b73b-b4c38716139f)
+
 
 ### 編譯與執行指令
 
