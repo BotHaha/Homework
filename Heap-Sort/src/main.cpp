@@ -6,63 +6,79 @@
 using namespace std;
 using namespace chrono;
 
-// Random permutation generator (程式 7.20)
+// 隨機排列產生器
 template <class T>
-void Permute(T *a, int n) {
+void Permute(T* a, int n) {
     for (int i = n; i >= 2; i--) {
         int j = rand() % i;
         swap(a[j], a[i - 1]);
     }
 }
 
-void insertionSort(vector<int>& arr) {
-    int n = arr.size();
-    for (int i = 1; i < n; i++) {
-        int key = arr[i];
-        int j = i - 1;
+// 維護最大堆積性質
+void maxHeapify(vector<int>& arr, int n, int i) {
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
 
-        while (j >= 0 && arr[j] > key) {
-            arr[j + 1] = arr[j];
-            j--;
-        }
-        arr[j + 1] = key;
+    if (left < n && arr[left] > arr[largest])
+        largest = left;
+
+    if (right < n && arr[right] > arr[largest])
+        largest = right;
+
+    if (largest != i) {
+        swap(arr[i], arr[largest]);
+        maxHeapify(arr, n, largest);
     }
 }
 
+// 建立最大堆積
+template <class T>
+void buildMaxHeap(vector<T>& arr) {
+    int n = arr.size();
+    for (int i = n / 2 - 1; i >= 0; i--)
+        maxHeapify(arr, n, i);
+}
+
+// Heap Sort 主程式
+template <class T>
+void heapSort(vector<T>& arr) {
+    int n = arr.size();
+    buildMaxHeap(arr);
+
+    for (int i = n - 1; i > 0; i--) {
+        swap(arr[0], arr[i]);
+        maxHeapify(arr, i, 0);
+    }
+}
 
 int main() {
     srand(time(0));
-    int n = 500; //測試 n=500、1000、2000、3000、4000、5000
+    int n = 10;
     vector<int> arr(n);
     for (int i = 0; i < n; i++) arr[i] = i + 1;
 
-    // 測量 timer 精度
     auto timer_start = high_resolution_clock::now();
     auto timer_end = high_resolution_clock::now();
     auto delta = duration_cast<nanoseconds>(timer_end - timer_start).count();
     cout << "Timer precision (delta δ): " << delta << " nanoseconds" << endl;
 
-    // 顯示原始陣列
     Permute(&arr[0], n);
+    /*
     cout << "Original array: ";
-    for (int num : arr) {
-        cout << num << " ";
-    }
+    for (int num : arr) cout << num << " ";
     cout << endl;
-
-    // 計算排序所需時間
+    */
     auto start = high_resolution_clock::now();
-    insertionSort(arr);
+    heapSort(arr);
     auto end = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(end - start).count();
-
-    // 顯示排序後陣列
+    /*
     cout << "Sorted array: ";
-    for (int num : arr) {
-        cout << num << " ";
-    }
+    for (int num : arr) cout << num << " ";
     cout << endl;
-
+    */
     cout << "Sorting time: " << duration << " microseconds" << endl;
     return 0;
 }
