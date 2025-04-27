@@ -10,13 +10,16 @@ Heap Sort 是一種基於堆積資料結構設計的排序演算法，
 
 ### 問題描述
 
-本題要求使用 Heap Sort 針對指定數量的整數進行排序，並分析其效能。
+本題要求使用 Heap Sort 針對指定數量的整數進行排序分析其效能，
+並透過多次執行找到最壞執行情況。
 
 ### 解題策略
 
 1. 使用隨機排列產生器（程式 7.20）產生測試資料。
-2. 將原始資料轉換成最大堆積（Max Heap）。
-3. 重複將堆積頂端（最大值）取出，移到陣列末尾，並重新調整剩餘元素成為新的 Max Heap。
+2. 每種資料筆數設定執行30次取最大時間來推測最壞情況。
+3. 將原始資料轉換成最大堆積（Max Heap）。
+4. 重複將堆積頂端（最大值）取出，移到陣列末尾，並重新調整剩餘元素成為新的 Max Heap。
+   
 
 ## 程式實作
 
@@ -31,7 +34,7 @@ Heap Sort 是一種基於堆積資料結構設計的排序演算法，
 using namespace std;
 using namespace chrono;
 
-// 隨機排列產生器
+// 隨機排列器
 template <class T>
 void Permute(T* a, int n) {
     for (int i = n; i >= 2; i--) {
@@ -40,39 +43,30 @@ void Permute(T* a, int n) {
     }
 }
 
-// 維護最大堆積性質
+// Heap Sort 子程序
 void maxHeapify(vector<int>& arr, int n, int i) {
     int largest = i;
-    int left = 2 * i + 1;
-    int right = 2 * i + 2;
+    int l = 2*i + 1;
+    int r = 2*i + 2;
 
-    if (left < n && arr[left] > arr[largest])
-        largest = left;
-
-    if (right < n && arr[right] > arr[largest])
-        largest = right;
-
+    if (l < n && arr[l] > arr[largest]) largest = l;
+    if (r < n && arr[r] > arr[largest]) largest = r;
     if (largest != i) {
         swap(arr[i], arr[largest]);
         maxHeapify(arr, n, largest);
     }
 }
 
-// 建立最大堆積
-template <class T>
-void buildMaxHeap(vector<T>& arr) {
+void buildMaxHeap(vector<int>& arr) {
     int n = arr.size();
-    for (int i = n / 2 - 1; i >= 0; i--)
+    for (int i = n/2 - 1; i >= 0; i--)
         maxHeapify(arr, n, i);
 }
 
-// Heap Sort 主程式
-template <class T>
-void heapSort(vector<T>& arr) {
+void heapSort(vector<int>& arr) {
     int n = arr.size();
     buildMaxHeap(arr);
-
-    for (int i = n - 1; i > 0; i--) {
+    for (int i = n-1; i > 0; i--) {
         swap(arr[0], arr[i]);
         maxHeapify(arr, i, 0);
     }
@@ -80,31 +74,35 @@ void heapSort(vector<T>& arr) {
 
 int main() {
     srand(time(0));
-    int n = 10;
-    vector<int> arr(n);
-    for (int i = 0; i < n; i++) arr[i] = i + 1;
+    int n = 10;        // 資料量
+    int trials = 30;     // 測試次數
 
-    auto timer_start = high_resolution_clock::now();
-    auto timer_end = high_resolution_clock::now();
-    auto delta = duration_cast<nanoseconds>(timer_end - timer_start).count();
-    cout << "Timer precision (delta δ): " << delta << " nanoseconds" << endl;
+    long long worst_time = 0;
+    vector<int> worst_case;
 
-    Permute(&arr[0], n);
-    /*
-    cout << "Original array: ";
-    for (int num : arr) cout << num << " ";
-    cout << endl;
-    */
-    auto start = high_resolution_clock::now();
-    heapSort(arr);
-    auto end = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(end - start).count();
-    /*
-    cout << "Sorted array: ";
-    for (int num : arr) cout << num << " ";
-    cout << endl;
-    */
-    cout << "Sorting time: " << duration << " microseconds" << endl;
+    for (int t = 0; t < trials; t++) {
+        vector<int> arr(n);
+        for (int i = 0; i < n; i++) arr[i] = i + 1;
+
+        Permute(&arr[0], n);
+
+        vector<int> temp = arr; // 保留一份原資料
+        auto start = high_resolution_clock::now();
+        heapSort(temp);
+        auto end = high_resolution_clock::now();
+
+        auto duration = duration_cast<microseconds>(end - start).count();
+
+        cout << "Trial " << t+1 << " - Sorting time: " << duration << " ms" << endl;
+
+        if (duration > worst_time) {
+            worst_time = duration;
+            worst_case = arr; // 記錄這組資料
+        }
+    }
+
+    cout << "Worst case sorting time: " << worst_time << " ms" << endl;
+
     return 0;
 }
 ```
@@ -120,22 +118,22 @@ int main() {
 
 | 測試案例 | 輸入參數 $n$ | Timer 精度（δ) | 排序執行時間 |
 |----------|--------------|--------------|-------------|
-| 測試一   | $n = 500$    | 100ns        | 197ms        |
-| 測試二   | $n = 1000$   | 100ns        | 463ms        |
-| 測試三   | $n = 2000$   | 100ns        | 871ms        |
-| 測試四   | $n = 3000$   | 100ns        | 1313ms       |
-| 測試五   | $n = 4000$   | 100ns        | 1730ms       | 
-| 測試六   | $n = 5000$   | 100ns        | 3067ms       | 
+| 測試一   | $n = 500$    | 100ns        | 206ms        |
+| 測試二   | $n = 1000$   | 100ns        | 602ms        |
+| 測試三   | $n = 2000$   | 100ns        | 1078ms       |
+| 測試四   | $n = 3000$   | 100ns        | 1669ms       |
+| 測試五   | $n = 4000$   | 100ns        | 2595ms       | 
+| 測試六   | $n = 5000$   | 100ns        | 3460ms       | 
 
 ### 編譯與執行指令
 
 ```shell
 $ g++ main.cpp --std=c++21 -o main.exe
 $ .\main.exe
-Timer precision (delta δ): 0 nanoseconds
+Timer precision (delta δ): 0 ns
 Original array: 7 2 5 10 4 8 6 1 9 3
 Sorted array: 1 2 3 4 5 6 7 8 9 10
-Sorting time: 50 microseconds
+Sorting time: 50 ms
 ```
 
 ### 結論
