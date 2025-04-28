@@ -133,7 +133,7 @@ int main() {
 | 測試五   | $n = 4000$   | 100ns        | 134093ms     | 
 | 測試六   | $n = 5000$   | 100ns        | 179179ms     | 
 
-### 圖表
+### 圖表（x 軸為 n，y 軸為時間）
 
 ![image](https://github.com/user-attachments/assets/263ae4a3-2b0f-4bc2-9fe6-fe0c4c5f796f)
 
