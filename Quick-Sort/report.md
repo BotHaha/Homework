@@ -122,7 +122,7 @@ int main() {
 
 ### 圖表（x 軸為 n，y 軸為時間）
 
-
+![image](https://github.com/user-attachments/assets/dba5ae45-13ef-42c5-a3e6-6ddea63b6b90)
 
 ### 編譯與執行指令
 
