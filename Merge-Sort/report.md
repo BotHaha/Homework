@@ -178,8 +178,7 @@ int main() {
 
 ### 圖表（x 軸為 n，y 軸為時間）
 
-![image](https://github.com/user-attachments/assets/d72eeaaf-40bc-4c89-b73b-b4c38716139f)
-
+![image](https://github.com/user-attachments/assets/0a53679f-88f8-4367-ae55-3f4d2768a2a0)
 
 ### 編譯與執行指令
 
