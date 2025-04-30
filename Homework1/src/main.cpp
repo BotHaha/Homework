@@ -134,13 +134,13 @@ void quick_sort(vector<int> arr) {
 void composite_sort(vector<int> arr) {
     int n = arr.size();
     if (n <= 32) {
-        insertion_sort(arr); // 小資料用插入排序
+        insertion_sort(arr);
     }
     else if (is_sorted(arr.begin(), arr.end())) {
-        return; // 已排序直接跳過
+        return;
     }
     else {
-        quick_sort_recursive(arr, 0, n - 1); // 預設使用 quick sort（含三數取中）
+        quick_sort_recursive(arr, 0, n - 1);
     }
 }
 
@@ -148,70 +148,63 @@ void composite_sort(vector<int> arr) {
 int main() {
     srand(time(0));
     int n = 500, trials = 30;
-    
-    /*2選1*/
-    string mode = "average";
-    //string mode = "worst";
 
-    /*5選1*/
-    string sort_method = "insertion"; 
+    /*5種排序選1*/
+    string sort_method = "insertion";
     //string sort_method = "merge";
     //string sort_method = "heap";
     //string sort_method = "quick";
     //string sort_method = "composite";
 
-
     vector<int> arr(n), best_input(n), temp(n);
-    double total_time = 0, worst_time = 0;
+    double total_time = 0, max_time = 0;
 
-    //測量時間精度
+    // 測試時間精度
     auto start = high_resolution_clock::now();
     auto end = high_resolution_clock::now();
     double duration = duration_cast<nanoseconds>(end - start).count();
-    cout << "Timer" << ": " << duration << " ms" << endl;
+    cout << "Timer: " << duration << " ns" << endl;
 
-    for (int i = 0; i < n; i++) arr[i] = i;
+    // Average + Worst-case 測試（同一批資料）
+    for (int t = 0; t < trials; t++) {
+        for (int i = 0; i < n; i++) arr[i] = i;
+        permute(arr);
+        vector<int> test = arr;
 
-    if (mode == "worst") {
-        for (int i = 0; i < trials; ++i) {
-            permute(arr);
-            vector<int> test = arr;
-            start = high_resolution_clock::now();
-            if (sort_method == "insertion") insertion_sort(test);
-            else if (sort_method == "merge") merge_sort(test);
-            else if (sort_method == "heap") heap_sort(test);
-            else if (sort_method == "quick") quick_sort(test);
-            else if (sort_method == "composite") composite_sort(test);
-            end = high_resolution_clock::now();
-            duration = duration_cast<microseconds>(end - start).count();
-            if (duration > worst_time) {
-                worst_time = duration;
-                best_input = arr;
-            }
+        start = high_resolution_clock::now();
+        if (sort_method == "insertion") insertion_sort(test);
+        else if (sort_method == "merge") merge_sort(test);
+        else if (sort_method == "heap") heap_sort(test);
+        else if (sort_method == "quick") quick_sort(test);
+        else if (sort_method == "composite") composite_sort(test);
+        end = high_resolution_clock::now();
+
+        duration = duration_cast<microseconds>(end - start).count();
+        total_time += duration;
+        if (duration > max_time) {
+            max_time = duration;
+            best_input = arr;
         }
-        cout << "Worst-case time: " << worst_time << " microseconds" << endl;
     }
-    else if (mode == "average") {
-        for (int t = 0; t < trials; t++) {
-            for (int i = 0; i < n; i++) arr[i] = i;
-            permute(arr);
-            vector<int> test = arr;
-            auto start = high_resolution_clock::now();
-            if (sort_method == "insertion") insertion_sort(test);
-            else if (sort_method == "merge") merge_sort(test);
-            else if (sort_method == "heap") heap_sort(test);
-            else if (sort_method == "quick") quick_sort(test);
-            else if (sort_method == "composite") composite_sort(test);
-            auto end = high_resolution_clock::now();
-            double duration = duration_cast<microseconds>(end - start).count();
-            total_time += duration;
-            worst_time = max(worst_time, duration);
-        }
-        cout << "Average time: " << total_time / trials << " microseconds" << endl;
-        cout << "Worst-case time (within average tests): " << worst_time << " microseconds" << endl;
+
+    cout << "Average time: " << total_time / trials << " microseconds" << endl;
+    
+
+    // 真正的最壞情況：In-place倒序
+    if (sort_method == "insertion" || sort_method == "merge") {
+        reverseFill(arr);
+        vector<int> test = arr;
+        start = high_resolution_clock::now();
+        if (sort_method == "insertion") insertion_sort(test);
+        else if (sort_method == "merge") merge_sort(test);
+        end = high_resolution_clock::now();
+        duration = duration_cast<microseconds>(end - start).count();
+        cout << "Actual worst-case time (reverse order): " << duration << " microseconds" << endl;
+    }
+    else {
+        cout << "Worst-case time (within average): " << max_time << " microseconds" << endl;
     }
 
     printMemoryUsage();
     return 0;
 }
-
