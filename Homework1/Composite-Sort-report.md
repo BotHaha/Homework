@@ -195,7 +195,7 @@ int main() {
 
 ### Composite 圖表（x 軸為 n，y 軸為時間）
 
-![image](https://github.com/user-attachments/assets/b0f39f6c-6ab3-48e5-8cff-c54bfa2abbb7)
+![image](https://github.com/user-attachments/assets/146cecd5-48bb-433d-9528-8cb8438dc26e)
 
 ### 所有排序的 Worst time 、 Average time 比較（x 軸為 n，y 軸為時間）
 
