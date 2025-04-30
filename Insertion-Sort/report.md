@@ -79,7 +79,7 @@ void insertionSort(vector<int>& arr) {
 int main() {
     srand(time(0));
 
-    int n = 500; // 資料量大小
+    int n = 10; // 資料量大小
     int trials = 30; // 平均情況測試次數
 
     vector<int> arr(n);
