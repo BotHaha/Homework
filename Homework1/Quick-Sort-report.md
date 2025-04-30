@@ -102,9 +102,6 @@ int main() {
     srand(time(0));
     int n = 10, trials = 30;
 
-    /*5種排序選1*/
-    string sort_method = "quick";
-
     vector<int> arr(n), best_input(n), temp(n);
     double total_time = 0, max_time = 0;
 
