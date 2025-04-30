@@ -1,44 +1,62 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
+#include <chrono>
+#include <Windows.h>
+#include <Psapi.h>
 #include <cstdlib>
 #include <ctime>
-#include <chrono>
+
 using namespace std;
 using namespace chrono;
 
-// 隨機排列器
-template <class T>
-void Permute(T* a, int n) {
+// 隨機排列產生器
+void Permute(vector<int>& a) {
+    int n = a.size();
     for (int i = n; i >= 2; i--) {
         int j = rand() % i;
         swap(a[j], a[i - 1]);
     }
 }
 
-// Heap Sort 子程序
+// 記憶體使用量測函式
+void printMemoryUsage() {
+    PROCESS_MEMORY_COUNTERS memInfo;
+    GetProcessMemoryInfo(GetCurrentProcess(), &memInfo, sizeof(memInfo));
+    cout << "------------------------" << endl;
+    cout << "Memory Usage:" << endl;
+    cout << "Working Set Size: " << memInfo.WorkingSetSize / 1024 << " KB" << endl;
+    cout << "Peak Working Set Size: " << memInfo.PeakWorkingSetSize / 1024 << " KB" << endl;
+    cout << "Pagefile Usage: " << memInfo.PagefileUsage / 1024 << " KB" << endl;
+    cout << "------------------------" << endl;
+}
+
+// Heapify 子函式
 void maxHeapify(vector<int>& arr, int n, int i) {
     int largest = i;
-    int l = 2*i + 1;
-    int r = 2*i + 2;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
 
-    if (l < n && arr[l] > arr[largest]) largest = l;
-    if (r < n && arr[r] > arr[largest]) largest = r;
+    if (left < n && arr[left] > arr[largest])
+        largest = left;
+
+    if (right < n && arr[right] > arr[largest])
+        largest = right;
+
     if (largest != i) {
         swap(arr[i], arr[largest]);
         maxHeapify(arr, n, largest);
     }
 }
 
-void buildMaxHeap(vector<int>& arr) {
-    int n = arr.size();
-    for (int i = n/2 - 1; i >= 0; i--)
-        maxHeapify(arr, n, i);
-}
-
+// Heap Sort 實作
 void heapSort(vector<int>& arr) {
     int n = arr.size();
-    buildMaxHeap(arr);
-    for (int i = n-1; i > 0; i--) {
+
+    for (int i = n / 2 - 1; i >= 0; i--)
+        maxHeapify(arr, n, i);
+
+    for (int i = n - 1; i >= 0; i--) {
         swap(arr[0], arr[i]);
         maxHeapify(arr, i, 0);
     }
@@ -46,34 +64,39 @@ void heapSort(vector<int>& arr) {
 
 int main() {
     srand(time(0));
-    int n = 10;        // 資料量
-    int trials = 30;     // 測試次數
 
-    long long worst_time = 0;
-    vector<int> worst_case;
+    int n = 500; // 資料量大小
+    int trials = 30; // 平均情況測試次數
 
+    vector<int> arr(n);
+    double total_time = 0;
+    double worst_time = 0;
+
+    //測量時間精度
+    auto start = high_resolution_clock::now();
+    auto end = high_resolution_clock::now();
+    double duration = duration_cast<nanoseconds>(end - start).count();
+    cout << "Timer" << ": " << duration << " ms" << endl;
+    cout << "Testing Heap Sort (Permute):" << endl;
     for (int t = 0; t < trials; t++) {
-        vector<int> arr(n);
         for (int i = 0; i < n; i++) arr[i] = i + 1;
+        Permute(arr);
 
-        Permute(&arr[0], n);
+        start = high_resolution_clock::now();
+        heapSort(arr);
+        end = high_resolution_clock::now();
 
-        vector<int> temp = arr; // 保留一份原資料
-        auto start = high_resolution_clock::now();
-        heapSort(temp);
-        auto end = high_resolution_clock::now();
-
-        auto duration = duration_cast<microseconds>(end - start).count();
-
-        cout << "Trial " << t+1 << " - Sorting time: " << duration << " ms" << endl;
-
-        if (duration > worst_time) {
-            worst_time = duration;
-            worst_case = arr; // 記錄這組資料
-        }
+        duration = duration_cast<microseconds>(end - start).count();
+        //cout << "Trial " << t + 1 << ": " << duration << " microseconds" << endl;
+        total_time += duration;
+        worst_time = max(worst_time, duration);
     }
+    cout << "Average time: " << total_time / trials << " microseconds" << endl;
+    cout << "------------------------" << endl;
+    cout << "Worst-case time: " << worst_time << " microseconds" << endl;
 
-    cout << "Worst case sorting time: " << worst_time << " ms" << endl;
+    // 測試記憶體使用量
+    printMemoryUsage();
 
     return 0;
 }
