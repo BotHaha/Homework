@@ -72,9 +72,33 @@ void composite_sort(vector<int> arr) {
     int n = arr.size();
     if (n <= 32) {
         insertion_sort(arr);
-    }
-    else if (is_sorted(arr.begin(), arr.end())) {
         return;
+    }
+    if (is_sorted(arr.begin(), arr.end())) {
+        return;
+    }
+
+    // 使用 pivot 拿來判斷分布好壞（是否有極度不平均的情況）
+    int low = 0, high = n - 1;
+    int mid = low + (high - low) / 2;
+    int a = arr[low], b = arr[mid], c = arr[high];
+    int pivot;
+    if (a > b) swap(a, b);
+    if (b > c) swap(b, c);
+    if (a > b) swap(a, b);
+    pivot = b;
+
+    int count_low = 0, count_high = 0;
+    for (int i = 0; i < n; i++) {
+        if (arr[i] < pivot) count_low++;
+        else if (arr[i] > pivot) count_high++;
+    }
+
+    double balance_ratio = double(min(count_low, count_high)) / n;
+
+    // 如果分布太極端 → fallback 用 merge sort
+    if (balance_ratio < 0.05) {
+        merge_sort(arr);
     }
     else {
         quick_sort_recursive(arr, 0, n - 1);
