@@ -164,7 +164,7 @@ int main() {
 
 ### 圖表（x 軸為 n，y 軸為時間）
 
-![image](https://github.com/user-attachments/assets/e81ff41b-419e-424f-b644-7d8a16cf6c19)
+![image](https://github.com/user-attachments/assets/980a860f-d248-4a32-a31b-bd1d83903892)
 
 ### 編譯與執行指令
 ```shell
