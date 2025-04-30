@@ -83,7 +83,7 @@ void heap_sort(vector<int> arr) {
 // ---------- 主控制區 ----------
 int main() {
     srand(time(0));
-    int n = 500, trials = 30;
+    int n = 10, trials = 30;
 
     /*5種排序選1*/
     string sort_method = "insertion";
