@@ -30,6 +30,7 @@ void ReverseFill(vector<int>& a) {
 void printMemoryUsage() {
     PROCESS_MEMORY_COUNTERS memInfo;
     GetProcessMemoryInfo(GetCurrentProcess(), &memInfo, sizeof(memInfo));
+    cout << "------------------------" << endl;
     cout << "Memory Usage:" << endl;
     cout << "Working Set Size: " << memInfo.WorkingSetSize / 1024 << " KB" << endl;
     cout << "Peak Working Set Size: " << memInfo.PeakWorkingSetSize / 1024 << " KB" << endl;
@@ -61,43 +62,40 @@ int main() {
     vector<int> arr(n);
     double total_time = 0;
 
-    // 選擇模式: true 平均情況, false 最壞情況
-    bool average_case = true;
-
     //測量時間精度
     auto start = high_resolution_clock::now();
     auto end = high_resolution_clock::now();
     double duration = duration_cast<nanoseconds>(end - start).count();
     cout << "Timer" << ": " << duration << " ms" << endl;
 
-    if (average_case) {
-        cout << "Average-case testing (Permute):" << endl;
-        for (int t = 0; t < trials; t++) {
-            for (int i = 0; i < n; i++) arr[i] = i + 1;
-            Permute(arr);
+    
+    cout << "Average-case testing (Permute):" << endl;
+    for (int t = 0; t < trials; t++) {
+        for (int i = 0; i < n; i++) arr[i] = i + 1;
+        Permute(arr);
 
-            start = high_resolution_clock::now();
-            insertionSort(arr);
-            end = high_resolution_clock::now();
-
-            duration = duration_cast<microseconds>(end - start).count();
-            //cout << t + 1 << ": " << duration << " ms" << endl;
-            total_time += duration;
-        }
-        cout << "Average time: " << total_time / trials << " ms" << endl;
-
-    }
-    else {
-        cout << "Worst-case testing (ReverseFill):" << endl;
-        ReverseFill(arr);
-
-        auto start = high_resolution_clock::now();
+        start = high_resolution_clock::now();
         insertionSort(arr);
-        auto end = high_resolution_clock::now();
+        end = high_resolution_clock::now();
 
-        double duration = duration_cast<microseconds>(end - start).count();
-        cout << "Worst-case time: " << duration << " ms" << endl;
+        duration = duration_cast<microseconds>(end - start).count();
+        //cout << t + 1 << ": " << duration << " ms" << endl;  //打印每一次排序所花的時間
+        total_time += duration;
     }
+    cout << "Average time: " << total_time / trials << " ms" << endl;
+    cout << "------------------------" << endl;
+    
+    
+    cout << "Worst-case testing (ReverseFill):" << endl;
+    ReverseFill(arr);
+
+    start = high_resolution_clock::now();
+    insertionSort(arr);
+    end = high_resolution_clock::now();
+
+    duration = duration_cast<microseconds>(end - start).count();
+    cout << "Worst-case time: " << duration << " ms" << endl;
+    
 
     // 測試記憶體使用量
     printMemoryUsage();
