@@ -24,35 +24,49 @@
 ```cpp
 #include <iostream>
 #include <vector>
+#include <algorithm>
+#include <chrono>
+#include <Windows.h>
+#include <Psapi.h>
 #include <cstdlib>
 #include <ctime>
-#include <chrono>
+
 using namespace std;
 using namespace chrono;
 
-// Random permutation generator (程式 7.20)
-template <class T>
-void Permute(T *a, int n) {
+// 隨機排列產生器
+void Permute(vector<int>& a) {
+    int n = a.size();
     for (int i = n; i >= 2; i--) {
         int j = rand() % i;
         swap(a[j], a[i - 1]);
     }
 }
 
-// 最壞情況產生器
-template <class T>
-void ReverseFill(T* a, int n) {
-    for (int i = 0; i < n; i++) {
+// 倒序排列產生器
+void ReverseFill(vector<int>& a) {
+    int n = a.size();
+    for (int i = 0; i < n; i++)
         a[i] = n - i;
-    }
 }
 
+// 記憶體使用量測函式
+void printMemoryUsage() {
+    PROCESS_MEMORY_COUNTERS memInfo;
+    GetProcessMemoryInfo(GetCurrentProcess(), &memInfo, sizeof(memInfo));
+    cout << "Memory Usage:" << endl;
+    cout << "Working Set Size: " << memInfo.WorkingSetSize / 1024 << " KB" << endl;
+    cout << "Peak Working Set Size: " << memInfo.PeakWorkingSetSize / 1024 << " KB" << endl;
+    cout << "Pagefile Usage: " << memInfo.PagefileUsage / 1024 << " KB" << endl;
+    cout << "------------------------" << endl;
+}
+
+// Insertion Sort 實作
 void insertionSort(vector<int>& arr) {
     int n = arr.size();
     for (int i = 1; i < n; i++) {
         int key = arr[i];
         int j = i - 1;
-
         while (j >= 0 && arr[j] > key) {
             arr[j + 1] = arr[j];
             j--;
@@ -61,43 +75,60 @@ void insertionSort(vector<int>& arr) {
     }
 }
 
+// 主程式
 int main() {
     srand(time(0));
-    int n = 10; //測試 n=500、1000、2000、3000、4000、5000
+
+    int n = 500; // 資料量大小
+    int trials = 30; // 平均情況測試次數
+
     vector<int> arr(n);
-    for (int i = 0; i < n; i++) arr[i] = i + 1;
+    double total_time = 0;
 
-    // 測量 timer 精度
-    auto timer_start = high_resolution_clock::now();
-    auto timer_end = high_resolution_clock::now();
-    auto delta = duration_cast<nanoseconds>(timer_end - timer_start).count();
-    cout << "Timer precision (delta δ): " << delta << " nanoseconds" << endl;
+    // 選擇模式: true 平均情況, false 最壞情況
+    bool average_case = true;
 
-    // 顯示原始陣列
-    Permute(&arr[0], n); //平均情況生成排序
-    //ReverseFill(&arr[0], n); //最壞情況生成排序
-    cout << "Original array: ";
-    for (int num : arr) {
-        cout << num << " ";
-    }
-    cout << endl;
-
-    // 計算排序所需時間
+    //測量時間精度
     auto start = high_resolution_clock::now();
-    insertionSort(arr);
     auto end = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(end - start).count();
+    double duration = duration_cast<nanoseconds>(end - start).count();
+    cout << "Timer" << ": " << duration << " ms" << endl;
 
-    // 顯示排序後陣列
-    cout << "Sorted array: ";
-    for (int num : arr) {
-        cout << num << " ";
+    if (average_case) {
+        cout << "Average-case testing (Permute):" << endl;
+        for (int t = 0; t < trials; t++) {
+            for (int i = 0; i < n; i++) arr[i] = i + 1;
+            Permute(arr);
+
+            start = high_resolution_clock::now();
+            insertionSort(arr);
+            end = high_resolution_clock::now();
+
+            duration = duration_cast<microseconds>(end - start).count();
+            //cout << t + 1 << ": " << duration << " ms" << endl;
+            total_time += duration;
+        }
+        cout << "Average time: " << total_time / trials << " ms" << endl;
+
     }
-    cout << endl;
+    else {
+        cout << "Worst-case testing (ReverseFill):" << endl;
+        ReverseFill(arr);
 
-    cout << "Sorting time: " << duration << " microseconds" << endl;
+        auto start = high_resolution_clock::now();
+        insertionSort(arr);
+        auto end = high_resolution_clock::now();
+
+        double duration = duration_cast<microseconds>(end - start).count();
+        cout << "Worst-case time: " << duration << " ms" << endl;
+    }
+
+    // 測試記憶體使用量
+    printMemoryUsage();
+
     return 0;
 }
+
 ```
 
 ## 效能分析
