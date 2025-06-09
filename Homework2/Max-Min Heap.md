@@ -26,7 +26,7 @@ IsEmpty() 檢查堆是否為空
 
 以下為主要程式碼 :
 
-'''cpp
+```cpp
 #include <iostream>
 #include <vector>
 #include <stdexcept>
@@ -113,7 +113,7 @@ int main() {
 
     return 0;
 }
-'''
+```
 
 ## 效能分析
 1. 時間複雜度
