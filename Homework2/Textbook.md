@@ -31,30 +31,72 @@ t_input = ceil(log_k(m)) × (n / S) × (t_s + t_l + S × t_t)
 
 ## 程式實作
 
+### 1. 標頭與命名空間
 ```cpp
 #include <iostream>
 #include <cmath>
 using namespace std;
+```
+這部分引入了：
 
-int main() {
-    double t_s = 0.08;
-    double t_l = 0.02;
-    double t_t = 0.001;
-    int S = 2000;
-    int n = 200000;
-    int m = 64;
+<iostream>：用來輸出分析結果
 
-    cout << "k\tt_input (sec)" << endl;
-    for (int k = 2; k <= 64; k *= 2) {
-        int rounds = ceil(log(m) / log(k));
-        double blocks = static_cast<double>(n) / S;
-        double t_block = t_s + t_l + S * t_t;
-        double t_input = rounds * blocks * t_block;
-        cout << k << "\t" << t_input << endl;
-    }
-    return 0;
+<cmath>：使用 log() 與 ceil() 進行數學運算
+
+using namespace std;：簡化標準函式的使用
+
+### 2. 參數設定區
+```cpp
+double t_s = 0.08;
+double t_l = 0.02;
+double t_t = 0.001;
+int S = 2000;
+int n = 200000;
+int m = 64;
+```
+這一區設定了外部排序相關的硬體參數與資料規模：
+
+參數	說明
+t_s	seek time（每次定位磁頭所需時間，單位：秒）
+t_l	latency（等待磁碟轉動到資料位置的延遲，秒）
+t_t	傳輸一筆 record 所需時間（秒）
+S	每個 block 中有多少筆資料
+n	總資料筆數（record 數）
+m	sorted runs 的數量（初始的輸入段數）
+
+### 3. 輸出表頭
+```cpp
+cout << "k\tt_input (sec)" << endl;
+```
+顯示表格標題：k 表示合併的分支數，t_input 是計算出來的總輸入時間。
+
+4. 主迴圈（計算不同 k 對應的輸入時間）
+```cpp
+for (int k = 2; k <= 64; k *= 2) {
+    int rounds = ceil(log(m) / log(k));
+    double blocks = static_cast<double>(n) / S;
+    double t_block = t_s + t_l + S * t_t;
+    double t_input = rounds * blocks * t_block;
+    cout << k << "\t" << t_input << endl;
 }
+```
+這段程式的邏輯：
 
+k 從 2 開始，每次乘以 2 到 64，代表不同的合併分支數
+
+rounds = ceil(log(m) / log(k))：表示在 k-way merge 下，需要合併幾輪才能完成全部資料的合併
+
+blocks = n / S：總資料可分成幾個 block
+
+t_block = t_s + t_l + S × t_t：一個 block 的讀取時間
+
+t_input = rounds × blocks × t_block：總輸入時間
+
+將每組 k 對應的 t_input 印出
+
+### 5. 結束程式
+```cpp
+return 0;
 ```
 
 ## 效能分析
