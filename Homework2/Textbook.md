@@ -12,8 +12,6 @@
 - (a) 推導 Phase Two 合併階段的「總輸入時間」`t_input`
 - (b) 代入具體參數，繪製 `t_input` 對 k 的關係圖，觀察是否存在某個 k 值使得 `t_CPU ≈ t_input`
 
----
-
 ### 解題策略
 
 - 根據外部排序 I/O 模型，每次從磁碟讀取一筆資料會耗費固定成本：
@@ -24,20 +22,12 @@
 - 以 block 為單位，假設每次讀取 1 block（含 S 筆 record），則一個 block 的讀取時間為：
 t_block = t_s + t_l + S × t_t
 
-
-
 - 對於 m 個 sorted runs、總共 n 筆資料，若使用 k-way merge：
 - 一次處理 k 個輸入串流，總共需進行 `ceil(log_k(m))` 次 merge
 - 每一輪合併都需輸入所有 n 筆資料
 
 - 總輸入時間為：
 t_input = ceil(log_k(m)) × (n / S) × (t_s + t_l + S × t_t)
-
-python
-複製
-編輯
-
----
 
 ## 程式實作
 
