@@ -130,12 +130,11 @@ O(n)：使用 std::vector<T> 儲存 n 筆資料
 
 ## 測試與驗證
 測試輸入程式
-shell
-複製
-編輯
+```shell
 $ g++ main.cpp --std=c++21 -o main.exe
 $ .\main.exe
 1 2 5 8
+```
 測試說明
 我們先插入數列：5, 2, 8, 1
 
