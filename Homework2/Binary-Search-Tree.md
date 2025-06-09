@@ -25,6 +25,8 @@
 
 ## 程式實作
 
+### 1. 標頭與基本設定
+
 ```cpp
 #include <iostream>
 #include <cmath>
@@ -32,97 +34,95 @@
 #include <ctime>
 #include <vector>
 using namespace std;
+```
+這部分引入了 C++ 中必要的標頭檔，包含輸出輸入、數學函式、隨機數、時間控制與向量容器，並使用 std 命名空間簡化程式撰寫。
 
+### 2. 結構定義：Node
+
+```cpp
 struct Node {
     int key;
     Node* left;
     Node* right;
     Node(int k) : key(k), left(nullptr), right(nullptr) {}
 };
+```
+這是 BST 的基本節點結構。每個節點包含：
 
+一個整數鍵值 key
+
+指向左子節點與右子節點的指標
+
+建構子初始化節點資料與左右節點為空指標
+
+### 3. 類別定義：BST
+
+```cpp
 class BST {
-private:
-    Node* root;
-
-    Node* Insert(Node* node, int key) {
-        if (!node) return new Node(key);
-        if (key < node->key) node->left = Insert(node->left, key);
-        else node->right = Insert(node->right, key);
-        return node;
-    }
-
-    int Height(Node* node) const {
-        if (!node) return 0;
-        return 1 + max(Height(node->left), Height(node->right));
-    }
-
-    Node* Delete(Node* node, int key) {
-        if (!node) return nullptr;
-
-        if (key < node->key)
-            node->left = Delete(node->left, key);
-        else if (key > node->key)
-            node->right = Delete(node->right, key);
-        else {
-            if (!node->left) return node->right;
-            if (!node->right) return node->left;
-
-            Node* minNode = FindMin(node->right);
-            node->key = minNode->key;
-            node->right = Delete(node->right, minNode->key);
-        }
-        return node;
-    }
-
-    Node* FindMin(Node* node) {
-        while (node && node->left)
-            node = node->left;
-        return node;
-    }
-
-public:
-    BST() : root(nullptr) {}
-
-    void Insert(int key) {
-        root = Insert(root, key);
-    }
-
-    int Height() const {
-        return Height(root);
-    }
-
-    void Delete(int key) {
-        root = Delete(root, key);
-    }
+    ...
 };
+```
+這是整棵 Binary Search Tree 的類別定義。包含了 BST 的基本操作，分成私有與公開兩部分：
 
-int main() {
-    srand(time(0));
-    vector<int> sizes = {100, 500, 1000, 2000, 5000, 10000};
-    cout << "n,height,height/log2(n)\n";
+Insert(Node*, int)：遞迴將 key 插入適當位置
 
-    for (int n : sizes) {
-        BST tree;
-        for (int i = 0; i < n; ++i) {
-            int x = rand();
-            tree.Insert(x);
-        }
-        int h = tree.Height();
-        double ratio = h / log2(n);
-        cout << n << "," << h << "," << ratio << "\n";
-    }
+Height(Node*)：遞迴計算從某節點開始的最大高度
 
-    // 刪除測試
+Delete(Node*, int)：刪除節點，並根據其子節點情況進行對應處理
+
+FindMin(Node*)：尋找一棵子樹中最小值的節點（用於刪除時替代）
+
+公開部分的函式是對外接口：
+
+Insert(int)：插入節點（呼叫私有的遞迴實作）
+
+Delete(int)：刪除節點
+
+Height()：回傳整棵樹的高度
+
+### 4. 主程式：隨機插入與高度測試
+
+```cpp
+vector<int> sizes = {100, 500, 1000, 2000, 5000, 10000};
+for (int n : sizes) {
     BST tree;
-    tree.Insert(50);
-    tree.Insert(30);
-    tree.Insert(70);
-    tree.Insert(60);
-    tree.Insert(80);
-    tree.Delete(70); // 測試刪除兩個子節點的情況
-    return 0;
+    for (int i = 0; i < n; ++i) {
+        int x = rand();
+        tree.Insert(x);
+    }
+    int h = tree.Height();
+    double ratio = h / log2(n);
+    cout << n << "," << h << "," << ratio << "\n";
 }
 ```
+這段程式進行 BST 的實驗操作：
+
+依序測試不同筆數 n 的資料量（從 100 到 10000）
+
+對每一組 n 筆資料，產生隨機亂數並插入 BST
+
+計算該樹的高度，並與理論的 log₂(n) 做比值比較
+
+最後印出每組資料的結果
+
+### 5. 節點刪除功能測試
+
+```cpp
+BST tree;
+tree.Insert(50);
+tree.Insert(30);
+tree.Insert(70);
+tree.Insert(60);
+tree.Insert(80);
+tree.Delete(70);
+```
+這段程式是用來測試 Delete() 函式：
+
+建立一棵小型 BST
+
+刪除具有兩個子節點的節點（key 為 70）
+
+用以驗證刪除邏輯是否能正確處理中序繼承者的替換與重建子樹
 
 ## 效能分析
 ### 時間複雜度
