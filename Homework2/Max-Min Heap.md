@@ -24,80 +24,67 @@ IsEmpty() 檢查堆是否為空
 
 ## 程式實作
 
-以下為主要程式碼 :
-
+### 1. 標頭與命名空間
 ```cpp
 #include <iostream>
 #include <vector>
 #include <stdexcept>
 using namespace std;
+```
+這部分引入必要的標頭：
 
+<iostream>：輸出輸入功能
+
+<vector>：使用向量作為堆的底層儲存結構
+
+<stdexcept>：提供 runtime_error 例外處理
+
+### 2. 抽象類別 MinPQ
+```cpp
 template <class T>
 class MinPQ {
 public:
     virtual ~MinPQ() {}
-
     virtual bool IsEmpty() const = 0;
     virtual const T& Top() const = 0;
     virtual void Push(const T&) = 0;
     virtual void Pop() = 0;
 };
+```
+這是一個模板抽象類別（Min Priority Queue），提供四個純虛擬函式，定義了最小優先佇列應有的基本操作介面：
 
+IsEmpty()：檢查是否為空堆
+
+Top()：取得目前堆中最小值
+
+Push()：插入新元素
+
+Pop()：移除最小元素
+
+### 3. 類別 MinHeap（具體實作）
+```cpp
 template <class T>
 class MinHeap : public MinPQ<T> {
-private:
-    vector<T> data;
-
-    void HeapifyUp(int index) {
-        while (index > 0) {
-            int parent = (index - 1) / 2;
-            if (data[index] < data[parent]) {
-                swap(data[index], data[parent]);
-                index = parent;
-            } else break;
-        }
-    }
-
-    void HeapifyDown(int index) {
-        int n = data.size();
-        while (2 * index + 1 < n) {
-            int left = 2 * index + 1;
-            int right = 2 * index + 2;
-            int smallest = index;
-
-            if (left < n && data[left] < data[smallest]) smallest = left;
-            if (right < n && data[right] < data[smallest]) smallest = right;
-
-            if (smallest != index) {
-                swap(data[index], data[smallest]);
-                index = smallest;
-            } else break;
-        }
-    }
-
-public:
-    bool IsEmpty() const override {
-        return data.empty();
-    }
-
-    const T& Top() const override {
-        if (IsEmpty()) throw runtime_error("Heap is empty");
-        return data[0];
-    }
-
-    void Push(const T& item) override {
-        data.push_back(item);
-        HeapifyUp(data.size() - 1);
-    }
-
-    void Pop() override {
-        if (IsEmpty()) throw runtime_error("Heap is empty");
-        data[0] = data.back();
-        data.pop_back();
-        if (!IsEmpty()) HeapifyDown(0);
-    }
+    ...
 };
+```
+這個類別繼承自 MinPQ，使用向量 vector<T> 實作最小堆的功能。
 
+成員函式：
+HeapifyUp(int index)：插入新元素後，將其「上浮」到正確位置
+
+HeapifyDown(int index)：刪除最小元素後，將新的根節點「下沉」以恢復堆序性
+
+Push(const T& item)：新增元素並執行 HeapifyUp
+
+Pop()：刪除最小元素並執行 HeapifyDown
+
+Top()：回傳堆中最小元素（data[0]）
+
+IsEmpty()：回傳是否為空
+
+### 4. 主程式 main()
+```cpp
 int main() {
     MinHeap<int> heap;
 
@@ -114,6 +101,9 @@ int main() {
     return 0;
 }
 ```
+這段程式是為了測試 MinHeap 的功能，操作如下：
+插入 4 個元素：5、2、8、1
+接著重複印出最小值並刪除，直到堆為空
 
 ## 效能分析
 1. 時間複雜度
